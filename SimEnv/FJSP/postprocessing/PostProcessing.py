@@ -3,6 +3,15 @@ from collections import OrderedDict, defaultdict
 
 # TODO : read_machine_log로 이름 변경
 def read_machine_log(_filepath):
+    """
+    기계 로그 파일을 읽어와 작업의 시작 및 완료 이벤트를 필터링하고, 각 기계별로 작업의 시작과 완료 시간을 계산하여 새 CSV 파일로 저장.
+
+    ### Args:
+        - `_filepath (str)`: 기계 로그를 포함한 CSV 파일의 경로.
+
+    ### Returns:
+        - `pd.DataFrame`: 기계별로 작업의 시작과 완료 시간 및 처리 시간을 포함하는 데이터프레임.
+    """
     df = pd.read_csv(_filepath)
     df = df.drop(df.columns[0], axis=1)
     # Filter 'Started' and 'Finished' events
