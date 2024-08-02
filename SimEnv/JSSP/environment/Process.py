@@ -3,7 +3,16 @@ from .Monitor import *
 
 class Process(object):
     def __init__(self, _env, _name, _model, _monitor, _machine_order, config):
+        """Initializes a Process object with the given parameters.
 
+        Args:
+            _env (object): The simulation environment.
+            _name (str): The name of the process.
+            _model (dict): The model containing all processes and machines.
+            _monitor (Monitor): The monitor for recording events.
+            _machine_order (list): The order of machines for processing.
+            config (object): Configuration object with process settings.
+        """
         self.config = config
         # input data
         self.env = _env
@@ -38,6 +47,8 @@ class Process(object):
         _env.process(self.dispatch())
 
     def work(self):
+        """Processes parts and manages machine availability and logging."""
+        
         while True:
             # yield self.ready_event
             # self.ready_event = simpy.Event(self.env)
@@ -81,6 +92,7 @@ class Process(object):
             yield machine.availability.get()
 
     def dispatch(self):
+        """Manages the dispatching of parts based on the configured dispatch mode."""
         while True:
             yield self.input_event
             self.input_event = simpy.Event(self.env)
@@ -103,6 +115,11 @@ class Process(object):
                         self.scheduled += 1
 
     def check_item(self):
+        """Checks if the next part to be processed matches the scheduled machine order.
+
+        Returns:
+            bool: True if a matching part is found, False otherwise.
+        """
         if self.config.print_console & (self.name == self.config.trace_object):
             print('My Machine Order :',self.machine_order)
             print(self.name, ': Now I have', [i.part_type for i in self.in_part.items],'Jobs Waiting')
@@ -116,6 +133,8 @@ class Process(object):
         return False
 
     def routing(self):
+        """Routes parts to the next process or to the sink after completion."""
+        
         while True:
             part = yield self.out_part.get()
 
