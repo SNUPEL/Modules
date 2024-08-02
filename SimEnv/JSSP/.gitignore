@@ -1,6 +1,7 @@
 environment/__pycache__/
 visualization/__pycache__/
 test/__pycache__/
+result/
 __pycache__/
 postprocessing/__pycache__/
 MachineInputOrder/__pycache__/

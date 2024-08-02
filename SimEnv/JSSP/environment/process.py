@@ -1,5 +1,11 @@
+"""
+This script is declaration of Process object in the environment of JSSP.
+Last revised by Jiwon Baek (baekjiwon@snu.ac.kr)
+August 2nd. 2024.
+"""
+
 import simpy
-from .Monitor import *
+from .monitor import *
 
 class Process(object):
     def __init__(self, _env, _name, _model, _monitor, _machine_order, config):

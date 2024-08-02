@@ -1,5 +1,10 @@
+"""
+This script is declaration of Sink object in the environment of JSSP.
+Last revised by Jiwon Baek (baekjiwon@snu.ac.kr)
+August 2nd. 2024.
+"""
 import simpy
-from .Monitor import *
+from .monitor import *
 
 
 # region Sink

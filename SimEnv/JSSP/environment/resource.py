@@ -1,6 +1,13 @@
+"""
+This script is declaration of Resource object in the environment of JSSP.
+Last revised by Jiwon Baek (baekjiwon@snu.ac.kr)
+August 2nd. 2024.
+"""
+
 import simpy
 class Machine(object):
     def __init__(self, env, id):
+        """An example of a resource-type Class object"""
         self.env = env
         self.id = id
         self.capacity = 1

@@ -1,4 +1,9 @@
-from visualization.Gantt import Gantt
+"""
+
+Last revised by Jiwon Baek (baekjiwon@snu.ac.kr)
+August 2nd. 2024.
+"""
+from .Gantt import Gantt
 import io
 from tkinter import *
 from PIL import Image, ImageTk

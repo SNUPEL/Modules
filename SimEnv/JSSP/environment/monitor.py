@@ -1,3 +1,9 @@
+"""
+This script is declaration of Monitor object in the environment of JSSP.
+Last revised by Jiwon Baek (baekjiwon@snu.ac.kr)
+August 2nd. 2024.
+"""
+
 import pandas as pd
 
 # region Monitor
@@ -45,7 +51,7 @@ class Monitor(object):
         event_tracer['Process'] = self.process_name
         event_tracer['Machine'] = self.machine_name
         if self.config.save_log:
-            event_tracer.to_csv(self.config.filename['log'])
+            event_tracer.to_csv(self.config.save_path + '\\' + self.config.filename['log'])
 
         return event_tracer
 
