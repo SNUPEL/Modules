@@ -6,7 +6,7 @@ sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(os.path.abspath(
 # from config import CONSOLE_MODE
 """
 콘솔 모드의 주된 목적은 개발자나 사용자가 프로그램의 내부 동작 상태를 보다 쉽게 모니터링하고, 
-문제를 진단하며, 시스템의 성능을 평가할 수 있게 하는 것입니다. 
+문제를 진단하며, 시스템의 성능을 평가할 수 있게 하는 것. 
 """
 
 
@@ -14,6 +14,15 @@ sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(os.path.abspath(
 # region Sink
 # 제조 시뮬레이션 종단 처리 역할을 하는 클래스. 최종 도착지. 완성된 부품들이 처리되고 기록되는 곳.
 class Sink(object):
+    """
+        Sink 클래스를 정의. 
+        이 클래스는 시뮬레이션의 마지막 단계에서 부품이 도착하고 완료된 부품의 수를 기록하는 역할을 함.
+
+    ### Args:
+        - `cfg (object)`: 설정 및 구성 정보를 담고 있는 객체. 주로 시뮬레이션의 설정을 포함함.
+        - `env (simpy.Environment)`: 시뮬레이션 환경을 나타내는 SimPy 환경 객체.
+        - `monitor (object)`: 시뮬레이션 이벤트를 기록하거나 모니터링하는 객체.
+    """
     def __init__(self, cfg, env, monitor):
         self.env = env
         # 이는 로그 또는 모니터링 목적으로 사용 가능
@@ -30,6 +39,16 @@ class Sink(object):
 
     # put function
     def put(self, part):
+        """
+            부품이 Sink에 도착할 때 호출됨. 
+            도착한 부품 수를 증가시키고, 관련 정보를 기록.
+
+        ### Args:
+            - `part (object)`: Sink로 전송된 부품 객체. 부품의 이름이나 기타 정보를 포함할 수 있음.
+
+        ### Returns:
+            - `None`
+        """
         # 이 메서드는 부품이 sink로 전송될때 호출. 부품의 도착을 처리하고 관련 정보 기록.
         self.parts_rec += 1
         # 도착한 부품 수 증가

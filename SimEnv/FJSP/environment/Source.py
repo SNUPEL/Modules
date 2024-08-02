@@ -9,6 +9,19 @@ sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(os.path.abspath(
 # region Source
 # source 클래스는 시뮬환경에서 부품을 생성하고 생성된 부품을 다음 공정으로 전송한다. 시스템의 출발지 역할을 모델링.
 class Source(object):
+    """
+        시뮬레이션 환경에서 부품을 생성하고 생성된 부품을 다음 공정으로 전송하는 역할. 시스템의 출발지 역할을 모델링.
+
+    ### Args:
+        - `_cfg (object)`: 시뮬레이션 설정을 포함하는 구성 객체.
+        - `_env (simpy.Environment)`: SimPy 환경 객체.
+        - `_name (str)`: Source의 이름.
+        - `_model (object)`: 시뮬레이션 모델 객체.
+        - `_monitor (object)`: 시뮬레이션 이벤트를 기록하거나 모니터링하는 객체.
+        - `job_type (str)`: Source가 생성하는 부품의 Job 타입.
+        - `IAT (str)`: 부품의 생성 간격을 정의하는 문자열. 예를 들어, `'exponential(1)'`은 지수 분포를 의미.
+        - `num_parts (int)`: 생성할 부품의 총 수. 기본값은 무한대(`float('inf')`).
+    """
     def __init__(self, _cfg, _env, _name, _model, _monitor, job_type, IAT='exponential(1)', num_parts=float('inf')):
         self.env = _env
         # _ 언더바는 임시 또는 지역 변수로 사용하거나 접근제한을 나타냄(비공개, 내부용)
@@ -28,6 +41,12 @@ class Source(object):
         _env.process(self.to_next_process())
 
     def generate(self):
+        """
+        부품을 생성하고 `generated_parts`에 저장. 각 부품의 생성 이벤트를 기록.
+        
+        ### Yields:
+            - `None`
+        """
         # IAT에 따라 반복적으로 부품 생성하고 이를 generated_parts에 저장. 생성된 각 부품은 'Job' 객체로 생성. 부품에 대한 정보와 생성 이벤트가 monitor에 의해 기록.
         while self.rec < self.num_parts:
             yield self.env.timeout(self.IAT)
@@ -65,6 +84,11 @@ class Source(object):
 
 
     def to_next_process(self):
+        """
+        생성된 부품을 다음 공정으로 라우팅. 부품의 위치를 업데이트하고 관련 이벤트 기록.
+        ### Yields:
+            - `None`
+        """
         # 생성된 부품을 처리하고 다음 공정으로 라우팅.
         # 부품은 generated_parts에서 추출되고 해당 부품의 다음 공정(next_process)로 전송(다음 공정의 in_buffer 입력버퍼로 이동)
         while True:
