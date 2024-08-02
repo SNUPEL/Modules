@@ -43,6 +43,26 @@ for i in range(10):
 
 # JobType 클래스를 정의합니다.
 class JobType:
+    """
+    Represents a job type in the manufacturing process.
+
+    ### Attributes:
+        - `jobtype (str)`: The identifier or name of the job type (e.g., 'J1', 'J2').
+        - `process_order (list of str)`: A list defining the order of processes for this job type.
+            Example: ['Process5', 'Process4', ..., 'Process9'].
+        - `machine_order (list of tuples)`: A list where each element is a tuple containing compatible machines
+            for each process. Example: [('M1', 'M2'), ('M2', 'M3'), ..., ('M7', 'M8', 'M9')].
+        - `processing_time (list of int)`: A list of processing times for each process.
+        - `num_process (int)`: The number of processes required for this job type.
+
+    ### Args:
+        - `jobtype (str)`: The identifier or name of the job type.
+        - `process_order (list of str)`: A list of process names in the order they are to be executed.
+        - `machine_order (list of tuples)`: A list where each tuple contains the compatible machines for the corresponding process.
+        - `processing_time (list of int)`: A list of processing times for each process.
+
+    When a `JobType` object is created, it is used to initialize the job type for `Source` and other components.
+    """
 # jobtype 클래스 정의
     def __init__(self, jobtype, process_order, machine_order, processing_time):
         self.jobtype = jobtype
@@ -69,9 +89,9 @@ job_list = []  # abz5 정보에 따라 생성된 JobType 개체들의 리스트
 for i in range(10):
     # 10개의 작업에 대한 반복 수행하며 JobType 객체 생성, job_list에 추가.
     job = JobType('J'+str(i+1),
-                  abz5_process['J' + str(i + 1)],
-                  abz5_machine['J' + str(i + 1)],
-                  abz5_duration['J' + str(i + 1)])
+                abz5_process['J' + str(i + 1)],
+                abz5_machine['J' + str(i + 1)],
+                abz5_duration['J' + str(i + 1)])
     # job은 jobtype 클래스에 각 job과 해당 job에 대한 process, machine, duration을 나타내는 JobType 클래스의 인스턴스.
     job_list.append(job)
 
