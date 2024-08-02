@@ -1,0 +1,14 @@
+environment/__pycache__/
+visualization/__pycache__/
+test/__pycache__/
+result/
+__pycache__/
+postprocessing/__pycache__/
+MachineInputOrder/__pycache__/
+GA_pyGAD/__pycache__/
+.idea
+GA_geneticpython/result/
+GA_geneticpython/result/__pycache__/
+Data/__pycache__/
+*.pyc
+*.png
