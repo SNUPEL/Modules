@@ -4,7 +4,6 @@ random.seed(42)
 import sys
 # 파이썬 라이브러리가 설치되어 있는 디렉터리를 확인할 수 있다.
 import os
-#
 import numpy as np
 
 
@@ -22,6 +21,18 @@ sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(os.path.abspath(
 
 class Process(object):
     def __init__(self, _cfg, _env, _name, _model, _monitor, _transportation_times):
+        """
+        프로세스 객체 초기화 메서드
+        :: 주어진 매개변수들을 사용하여 프로세스 객체를 초기화함. 시뮬레이션 환경, 프로세스 이름, 모델, 모니터 객체, 설정 파일 및 운송 시간 데이터를 설정
+
+        ### Args:
+            - `_cfg (object)`: 설정 데이터 및 구성 정보를 포함하는 객체.
+            - `_env (object)`: 시뮬레이션 환경 객체.
+            - `_name (str)`: 프로세스의 이름.
+            - `_model (object)`: 모델 데이터 객체.
+            - `_monitor (object)`: 이벤트 기록을 위한 모니터 객체.
+            - `_transportation_times (list)`: 운송 시간 데이터를 포함하는 리스트.
+        """
         # 프로세스 객체의 초기화. 필수 입력 데이터로 시뮬레이션 환경, 공정 이름, 모델, 모니터 객체, 설정파일.
         # input data
         self.env = _env
@@ -39,10 +50,9 @@ class Process(object):
 
         self.work_waiting = [self.env.event() for i in range(self.cfg.num_job)]
         # 작업 대기 이벤트 생성, 작업의 시작을 제어할 수 있음.
-        """ 
-        각 작업이 시작되기 전에 대기해야하는 이벤트들을 저장하는 리스트.
-        이 리스트의 길이는 cfg.num_job과 같음. 각 요소는 event로 생성된 이벤트 객체.
-        """
+
+        # 각 작업이 시작되기 전에 대기해야하는 이벤트들을 저장하는 리스트.
+        # 이 리스트의 길이는 cfg.num_job과 같음. 각 요소는 event로 생성된 이벤트 객체.
 
 
         # 시뮬레이션 환경에 프로세스 등록
@@ -50,14 +60,29 @@ class Process(object):
         _env.process(self.run())
         _env.process(self.to_next_process())
 
-    """
-    Class Description
-    Process.run() : 작업 하나를 골라서 env.process()에 work를 추가시킴
-    Process.work() : machine의 사용권을 얻고, timeout이 일어나는 부분
-    Process.to_next_process() : 다음 process로 전달
-    """
+
+    # Class Description
+    # Process.run() : 작업 하나를 골라서 env.process()에 work를 추가시킴
+    # Process.work() : machine의 사용권을 얻고, timeout이 일어나는 부분
+    # Process.to_next_process() : 다음 process로 전달
+
 
     def work(self, part, machine, pt):
+        """
+        특정 부품에 대한 작업을 수행하는 메서드
+        :: 선택된 기계에서 부품을 처리하는 로직을 담고 있으며, 작업 시작과 완료 시 모니터에 이벤트를 기록
+        :: 작업을 시작하기 전에 선행 조건이 충족되었는지 확인하고, 기계의 사용 가능 상태를 체크한 후 작업을 수행
+        :: 작업이 완료되면 기계의 상태를 업데이트하고 부품을 출력 버퍼로 이동시킴
+
+        ### Args:
+            - `part (object)`: 현재 작업 중인 부품 객체. 이 객체는 `op` 리스트를 통해 작업 관련 정보를 가지고 있음
+            - `machine (object)`: 부품을 처리할 기계 객체. 기계의 상태와 큐를 관리
+            - `pt (int)`: 공정에 소요되는 시간 (단위: 시간). 작업을 수행하는 데 필요한 시간을 나타냄
+
+        ### Yields:
+            - `None`: 이 메서드는 시뮬레이션의 이벤트를 생성하여 다른 작업이 이 메서드의 완료를 기다리도록 함
+            - `yield`를 사용하여 시뮬레이션의 이벤트를 처리함
+        """
         # 밑에 run 함수에서 불러옴.
 
         # 특정 부품에 대한 실제 작업을 수행. 선택된 기계에서 부품을 처리하는 로직을 담고 있으며, 작업시작과 완료 시 모니터에 이벤트 기록.
@@ -129,7 +154,16 @@ class Process(object):
         # 기계 상태를 유휴 상태로 변경
 
     def run(self):
-        # 공정의 주 실행 루프를 정의. 무한푸르 통해 지속적으로 작업 받아 처리하고 적절한 기계를 선택하여 작업 실행.
+        """
+        공정의 주 실행 루프를 정의하는 메서드.
+
+        이 메서드는 무한 루프를 통해 지속적으로 작업을 받아 처리하고, 적절한 기계를 선택하여 작업을 실행
+        입력 버퍼에서 작업 부품을 가져와 기계를 선택하고, 선택된 기계에서 작업을 수행하도록 합니다. 작업이 완료되면 출력 버퍼로 부품을 이동시킴
+
+        ### Yields:
+            - `part (object)`: 입력 버퍼에서 가져온 작업 부품 객체. 이 객체는 처리할 작업 단계와 관련된 정보를 가지고 있음
+        """
+
         """
         [생각해 볼 만한 이슈]
         1. 현재는 scheduler가 아무 job도 고르지 않기를 선택하는 경우에 대한 대응이 불가능함
@@ -196,7 +230,7 @@ class Process(object):
             # 선택된 기계의 큐에 작업 추가.
 
             print('%d \t%s have %d operations in queue... turning idle at %d... \tfinish working at %d' %
-                  (self.env.now, machine.name, len(machine.queue), machine.turn_idle, machine.expected_turn_idle()))
+                (self.env.now, machine.name, len(machine.queue), machine.turn_idle, machine.expected_turn_idle()))
 
             ############### 3. work() 인스턴스 생성 / 작업이 실제로 기계에서 작업시작.
             self.env.process(self.work(part, machine, pt))
@@ -204,6 +238,18 @@ class Process(object):
 
 
     def heuristic_LIT(self, operation):
+        """
+        가장 적은 대기 시간(Least Idle Time)을 가진 기계를 선택하는 휴리스틱 함수.
+        :: 주어진 작업(`operation`)을 수행할 수 있는 기계 목록에서 대기 시간이 가장 짧은 기계를 선택.
+        :: 대기 시간이 같은 기계가 여러 개일 경우, 그 중 하나를 랜덤으로 선택함
+
+        ### Args:
+            - `operation (Operation)`: 작업을 정의하는 `Operation` 객체. 이 객체는 가능한 기계 목록과 각 기계에 대한 공정 시간을 포함하고 있음
+
+        ### Returns:
+            - `(Machine, float)`: 선택된 기계와 해당 기계에서의 작업 시간을 반환. 
+            - `Machine`은 선택된 기계 객체이며, `float`는 그 기계에서 작업을 완료하는 데 필요한 시간
+        """
         machine_list = operation.machine_available
         least_idle_time = min(len(m.queue) for m in machine_list)
         candidates = [m for m in machine_list if len(m.queue) == least_idle_time]
@@ -212,6 +258,18 @@ class Process(object):
         return least_idle_machine, process_time
 
     def heuristic_LUT(self, operation):
+        """
+        가장 적은 사용 시간을 가진 기계를 선택하는 휴리스틱 함수.
+        :: 주어진 작업(`operation`)을 수행할 수 있는 기계 목록에서 가장 적은 총 사용 시간을 기록한 기계를 선택. 
+        :: 사용 시간이 같은 기계가 여러 개일 경우, 그 중 하나를 랜덤으로 선택함
+
+        ### Args:
+            - `operation (Operation)`: 작업을 정의하는 `Operation` 객체. 이 객체는 가능한 기계 목록과 각 기계에 대한 공정 시간을 포함함
+
+        ### Returns:
+            - `(Machine, float)`: 선택된 기계와 해당 기계에서의 작업 시간을 반환. 
+            - `Machine`은 선택된 기계 객체, `float`는 그 기계에서 작업을 완료하는 데 필요한 시간
+        """
         machine_list = operation.machine_available
         least_util_time = min(m.util_time for m in machine_list)
         candidates = [m for m in machine_list if m.util_time == least_util_time]
@@ -220,6 +278,18 @@ class Process(object):
         return least_util_machine, process_time
 
     def heuristic_SPT(self, operation):
+        """
+        가장 짧은 처리 시간을 가진 기계를 선택하는 휴리스틱 함수.
+        :: 주어진 작업(`operation`)을 수행할 수 있는 기계 목록에서 가장 짧은 처리 시간을 가진 기계를 선택. 
+        :: 처리 시간이 같은 기계가 여러 개일 경우, 그 중 하나를 랜덤으로 선택함
+
+        ### Args:
+            - `operation (Operation)`: 작업을 정의하는 `Operation` 객체. 이 객체는 가능한 기계 목록과 각 기계에 대한 공정 시간을 포함
+
+        ### Returns:
+            - `(Machine, float)`: 선택된 기계와 해당 기계에서의 작업 시간을 반환. 
+            - `Machine`은 선택된 기계 객체, `float`는 그 기계에서 작업을 완료하는 데 필요한 시간
+        """
         machine_list = operation.machine_available
         min_process_time = min(operation.process_time)
         candidates = [m for i, m in enumerate(machine_list) if operation.process_time[i] == min_process_time]
@@ -227,6 +297,18 @@ class Process(object):
         return selected_machine, min_process_time
 
     def heuristic_LPT(self, operation):
+        """
+        가장 긴 처리 시간을 가진 기계를 선택하는 휴리스틱 함수.
+        :: 주어진 작업(`operation`)을 수행할 수 있는 기계 목록에서 가장 긴 처리 시간을 가진 기계를 선택.
+        :: 처리 시간이 같은 기계가 여러 개일 경우, 그 중 하나를 랜덤으로 선택.
+
+        ### Args:
+            - `operation (Operation)`: 작업을 정의하는 `Operation` 객체. 이 객체는 가능한 기계 목록과 각 기계에 대한 공정 시간을 포함
+
+        ### Returns:
+            - `(Machine, float)`: 선택된 기계와 해당 기계에서의 작업 시간을 반환 
+            - `Machine`은 선택된 기계 객체, `float`는 그 기계에서 작업을 완료하는 데 필요한 시간.
+        """
         machine_list = operation.machine_available
         max_process_time = max(operation.process_time)
         candidates = [m for i, m in enumerate(machine_list) if operation.process_time[i] == max_process_time]
@@ -234,6 +316,18 @@ class Process(object):
         return selected_machine, max_process_time
 
     def heuristic_MOR(self, operation):
+        """
+        대기 작업이 가장 많은 기계를 선택하는 휴리스틱 함수.
+        :: 주어진 작업(`operation`)을 수행할 수 있는 기계 목록에서 현재 대기 중인 작업 수가 가장 많은 기계를 선택. 
+        :: 대기 작업 수가 같은 기계가 여러 개일 경우, 그 중 하나를 랜덤으로 선택.
+
+        ### Args:
+            - `operation (Operation)`: 작업을 정의하는 `Operation` 객체. 이 객체는 가능한 기계 목록과 각 기계에 대한 공정 시간을 포함.
+
+        ### Returns:
+            - `(Machine, float)`: 선택된 기계와 해당 기계에서의 작업 시간을 반환. 
+            - `Machine`은 선택된 기계 객체, `float`는 그 기계에서 작업을 완료하는 데 필요한 시간.
+        """
         machine_list = operation.machine_available
         max_operations_remaining = max(len(m.queue) for m in machine_list)
         candidates = [m for m in machine_list if len(m.queue) == max_operations_remaining]
@@ -242,6 +336,18 @@ class Process(object):
         return most_ops_remaining_machine, process_time
 
     def heuristic_LOR(self, operation):
+        """
+        대기 작업이 가장 적은 기계를 선택하는 휴리스틱 함수.
+        :: 주어진 작업(`operation`)을 수행할 수 있는 기계 목록에서 현재 대기 중인 작업 수가 가장 적은 기계를 선택. 
+        :: 대기 작업 수가 같은 기계가 여러 개일 경우, 그 중 하나를 랜덤으로 선택.
+
+        ### Args:
+            - `operation (Operation)`: 작업을 정의하는 `Operation` 객체. 이 객체는 가능한 기계 목록과 각 기계에 대한 공정 시간을 포함하고 있습니다.
+
+        ### Returns:
+            - `(Machine, float)`: 선택된 기계와 해당 기계에서의 작업 시간을 반환. 
+            - `Machine`은 선택된 기계 객체, `float`는 그 기계에서 작업을 완료하는 데 필요한 시간.
+        """
         machine_list = operation.machine_available
         least_operations_remaining = min(len(m.queue) for m in machine_list)
         candidates = [m for m in machine_list if len(m.queue) == least_operations_remaining]
@@ -305,6 +411,18 @@ class Process(object):
     #     return machine, max(pt_list)
 
     def heuristic_FJSP(self, operation):
+        """
+        기계의 남은 가동 시간이 가장 짧은 기계를 선택하는 휴리스틱 함수.
+        :: 주어진 작업(`operation`)을 수행할 수 있는 기계 목록에서 현재 남아있는 가동 시간이 가장 짧은 기계를 선택. 
+        :: 기계가 유휴 상태일 경우 즉시 선택, 유휴 상태가 아닌 기계 중에서는 남은 가동 시간이 가장 짧은 기계를 선택.
+
+        ### Args:
+            - `operation (Operation)`: 작업을 정의하는 `Operation` 객체. 이 객체는 가능한 기계 목록과 각 기계에 대한 공정 시간을 포함.
+
+        ### Returns:
+            - `(Machine, float)`: 선택된 기계와 해당 기계에서의 작업 시간을 반환. 
+            - `Machine`은 선택된 기계 객체이며, `float`는 그 기계에서 작업을 완료하는 데 필요한 시간.
+        """
         # compatible machine list
         machine_list = operation.machine_available
         # 사용 가능한 기계 목록 가져옴.
@@ -339,6 +457,17 @@ class Process(object):
         return machine, process_time
 
     def heuristic_JSSP(self, operation):
+        """
+        주어진 작업(`operation`)이 수행될 수 있는 단일 기계를 선택하는 휴리스틱 함수.
+        :: 주어진 작업에 대해 사용할 수 있는 기계가 하나만 존재할 경우, 그 기계를 선택하고 공정 시간을 반환. 기계 선택 및 공정 시간 결정은 작업에 명시된 대로 설정됨.
+        
+        ### Args:
+            - `operation (Operation)`: 작업을 정의하는 `Operation` 객체. 이 객체는 사용 가능한 단일 기계와 그에 대한 공정 시간을 포함.
+
+        ### Returns:
+            - `(Machine, float)`: 선택된 기계와 해당 기계에서의 작업 시간을 반환. 
+            - `Machine`은 선택된 기계 객체이며, `float`는 그 기계에서 작업을 완료하는 데 필요한 시간.
+        """
         machine = operation.machine_available
         process_time = operation.process_time
 
@@ -348,6 +477,14 @@ class Process(object):
         return machine, process_time
 
     def to_next_process(self):
+        """
+        부품이 공정을 완료한 후 다음 공정으로 이동시키는 프로세스.
+        :: 부품이 공정을 완료하면 출력 버퍼에서 부품을 가져와 다음 공정으로 이동시킴. 
+        만약 마지막 공정이 완료되었으면 부품을 최종 목적지로 이동시킴. 부품의 현재 위치를 업데이트하고, 다음 공정의 입력 버퍼로 부품을 전달.
+
+        ### Yields:
+            - `_type_`: `None`을 반환. 부품이 다음 공정으로 이동하는 과정에서 발생하는 이벤트를 생성.
+        """
         while True:
             part = yield self.out_buffer.get()
             # 출력 버퍼에서 부품 가져옴.

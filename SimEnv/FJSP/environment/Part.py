@@ -9,7 +9,23 @@ class Operation(object):
     """
 
     def __init__(self, model, env, id, part_name, process_type, machine_list, process_time, requirements=None,
-                 operation_type=None, preemption=None):
+                operation_type=None, preemption=None):
+        """
+        공정 객체 초기화 메서드
+        :: 주어진 매개변수들을 사용하여 공정 객체 초기화
+
+        ### Args:
+            - `model (object)`: 공정 및 기계 객체들을 포함하는 모델
+            - `env (object)`: 현재 환경 또는 시뮬레이션 객체
+            - `id (int)`: 공정의 고유 ID
+            - `part_name (str)`: 공정이 수행되는 부품의 이름
+            - `process_type (str)`: 공정의 타입을 나타내는 문자열
+            - `machine_list (list)`: 공정을 수행할 수 있는 기계들의 목록
+            - `process_time (int or list)`: 공정에 필요한 시간, 정수 또는 리스트로 제공될 수 있음
+            - `requirements (list, optional)`: 공정 시작 전에 충족되어야 하는 조건들을 나타냄. 기본값은 None
+            - `operation_type (str, optional)`: 공정의 타입을 나타내는 문자열. 기본값은 None
+            - `preemption (bool, optional)`: 선점 여부를 나타내는 불리언 값. 기본값은 None
+        """
         self.model = model
         self.id = id  # Integer
         self.process = self.model[process_type]  # Convert String to Process Object
@@ -93,14 +109,19 @@ class Job(object):
         # 작업 유형에 정의된 공정 수와 정보를 바탕으로 작업에 필요한 'operation' 객체를 생성하고 초기화.
 
     def generate_operation(self):
+        """
+        작업에 필요한 'operation' 객체를 생성하고 초기화하는 메서드
+
+        작업 유형에 정의된 공정 수와 정보를 바탕으로 'operation' 객체를 생성하여 초기화하고, 이를 `op` 리스트에 추가합니다.
+        """
         # 작업 유형에 정의된 공정 수와 정보를 바탕으로 작업에 필요한 'operation' 객체를 생성하고 초기화.
         for j in range(self.job_type.num_process):
             o = Operation(self.model, self.env,
-                          id=j, part_name=self.name,
-                          process_type=self.job_type.process_order[j],
-                          machine_list=self.job_type.machine_order[j],
-                          process_time=self.job_type.processing_time[j],
-                          requirements=None)
+                        id=j, part_name=self.name,
+                        process_type=self.job_type.process_order[j],
+                        machine_list=self.job_type.machine_order[j],
+                        process_time=self.job_type.processing_time[j],
+                        requirements=None)
             self.op.append(o)
             # op라는 리스트에 model, id, part_name, machine_list 등을 저장한다.
 
