@@ -3,6 +3,12 @@ import pandas as pd
 
 # region Monitor
 class Monitor(object):
+    """
+    ## _summary_
+
+    ### Args:
+        - `object (_type_)`: _description_
+    """
     def __init__(self, filepath):
         #파일 경로를 인자로 받아 monitor 객체 초기화.
         self.filepath = filepath  ## Event tracer 저장 경로
@@ -14,6 +20,15 @@ class Monitor(object):
         self.machine_name = list()
 
     def record(self, time, process, machine, part_name=None, event=None):
+        """## _summary_
+
+        ### Args:
+            - `time (_type_)`: _description_
+            - `process (_type_)`: _description_
+            - `machine (_type_)`: _description_
+            - `part_name (_type_, optional)`: _description_. Defaults to None.
+            - `event (_type_, optional)`: _description_. Defaults to None.
+        """
         # 이벤트를 기록
         # 시간, 사건, 부품, 공정, 기계)
         self.time.append(time)
