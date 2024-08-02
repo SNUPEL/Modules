@@ -3,14 +3,15 @@ import pandas as pd
 
 # region Monitor
 class Monitor(object):
-    """
-    ## _summary_
-
-    ### Args:
-        - `object (_type_)`: _description_
-    """
     def __init__(self, filepath):
-        #파일 경로를 인자로 받아 monitor 객체 초기화.
+        """
+        Monitor 클래스 초기화 메서드
+        :: 주어진 파일 경로를 사용하여 이벤트 트레이서를 초기화 함
+
+        ### Args:
+            - `filepath (str)`: 이벤트 트레이서를 저장할 파일 경로
+        """
+        
         self.filepath = filepath  ## Event tracer 저장 경로
         # 이벤트 데이터 저장할 리스트 초기화(시간, 사건, 부품, 공정이름, 기계 이름)
         self.time = list()
@@ -20,17 +21,17 @@ class Monitor(object):
         self.machine_name = list()
 
     def record(self, time, process, machine, part_name=None, event=None):
-        """## _summary_
+        """
+        기록 메서드
+        :: 주어진 시간, 공정, 기계, 부품 이름 및 이벤트를 기록함
 
         ### Args:
-            - `time (_type_)`: _description_
-            - `process (_type_)`: _description_
-            - `machine (_type_)`: _description_
-            - `part_name (_type_, optional)`: _description_. Defaults to None.
-            - `event (_type_, optional)`: _description_. Defaults to None.
+            - `time (str)`: 기록할 시간 정보
+            - `process (str)`: 기록할 공정의 이름
+            - `machine (str)`: 기록할 기계의 이름
+            - `part_name (str, optional)`: 기록할 부품의 이름, 기본값은 None
+            - `event (str, optional)`: 기록할 이벤트의 이름, 기본값은 None
         """
-        # 이벤트를 기록
-        # 시간, 사건, 부품, 공정, 기계)
         self.time.append(time)
         self.event.append(event)
         self.part.append(part_name)  # string
@@ -38,7 +39,13 @@ class Monitor(object):
         self.machine_name.append(machine)
 
     def save_event(self):
-        # 모든 기록된 이벤트를 csv 파일로 저장하고 dataframe을 반환
+        """
+        기록된 이벤트를 저장하는 메서드
+        :: 모든 기록된 이벤트를 CSV 파일로 저장하고 데이터프레임을 반환함
+
+        ### Returns:
+            - `pd.DataFrame`: 기록된 이벤트를 포함하는 데이터프레임
+        """
         event = pd.DataFrame(columns=['Time', 'Event', 'Part', 'Process', 'Machine'])
         event['Time'] = self.time
         event['Event'] = self.event
@@ -46,8 +53,7 @@ class Monitor(object):
         event['Process'] = self.process_name
         event['Machine'] = self.machine_name
 
-        event.to_csv(self.filepath)
-        # dataframe 데이터를 CSV 파일 형식으로 저장.
+        event.to_csv(self.filepath) # dataframe 데이터를 CSV 파일 형식으로 저장
 
         return event
 
@@ -55,14 +61,24 @@ class Monitor(object):
 # endregion
 
 def monitor_console(time, part, object='Entire Process', command=''):
-    # 제조 공정에서 발생하는 이벤트를 콘솔에 출력하는 역할을 함. / 진행상황 쉽게 파악
+    """
+    제조 공정 이벤트를 콘솔에 출력하는 함수
+    :: 특정 시간에 어떤 부품이 어떤 공정을 거치고 있는지, 그 공정이 어느 기계에서 실행되고 있는지에 대한 정보를 출력함
+
+    ### Args:
+        - `time (str)`: 이벤트 발생 시간
+        - `part (object)`: 현재 작업 중인 부품에 대한 정보
+        - `object (str, optional)`: 출력할 정보의 범위. 'Single Part', 'Single Job', 'Entire Process', 'Machine' 중 하나를 지정. 기본값은 'Entire Process'
+        - `command (str, optional)`: 추가로 출력할 명령이나 메시지. 기본값은 ''
+    """
+    # 제조 공정에서 발생하는 이벤트를 콘솔에 출력하는 역할을 함. / 진행상황을 쉽게 파악하기 위함
     # 특정 시간에 어떤 부품이 어떤 공정을 거치고 있는지, 그 공정이 어느 기계에서 실행되고 있는지에 대한 정보 출력.
     # time: 이벤트 발생시간, part: 현재 작업중인 부품에 대한 정보, object: 출력할 정보의 범위를 지정(ex) '단일부품', '전체공정')
     # command: 추가적으로 출력할 특별한 명령이나 메시지 지정 문자열.
-    """
-    console_mode : boolean
-    object : 'single part' for default
-    """
+    
+    # console_mode : boolean
+    # object : 'single part' for default
+    
     operation = part.op[part.step]
     command = " "+command+" "
     if object == 'Single Part':
@@ -83,6 +99,14 @@ def monitor_console(time, part, object='Entire Process', command=''):
 
 
 def print_by_machine(env, part):
+    """
+    기계 별로 이벤트 정보를 출력하는 함수
+    :: 각 기계에서 실행되고 있는 공정의 이름을 포맷에 맞게 출력함
+
+    ### Args:
+        - `env (object)`: 현재 환경 또는 시뮬레이션 객체, 현재 시간 제공
+        - `part (object)`: 현재 작업 중인 부품에 대한 정보
+    """
     if part.op[part.step].machine_list == 0:
         print(str(env.now), '\t\t\t\t', str(part.op[part.step].name))
         # \t는 tap 의미.
