@@ -2,6 +2,8 @@
 Package Configurations
 python                    3.11.3
 simpy                     4.0.1
+Last revised by Jiwon Baek (baekjiwon@snu.ac.kr)
+August 2nd. 2024.
 """
 import pandas as pd
 from matplotlib.patches import Patch
@@ -44,7 +46,7 @@ def Gantt(result, num, config):
 
     # Save the figure as an image file
     if config.save_gantt:
-        fig.savefig(config.filename['gantt'], format='png')
+        fig.savefig(config.save_path + '\\' + config.filename['gantt'], format='png')
 
     # Create a BytesIO object
     image_bytes_io = BytesIO()

@@ -1,4 +1,8 @@
-
+"""
+This script is declaration of Part object in the environment of JSSP.
+Last revised by Jiwon Baek (baekjiwon@snu.ac.kr)
+August 2nd. 2024.
+"""
 
 # region Operation
 class Operation(object):

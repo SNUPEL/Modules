@@ -1,6 +1,11 @@
+"""
+This script is declaration of Source object in the environment of JSSP.
+Last revised by Jiwon Baek (baekjiwon@snu.ac.kr)
+August 2nd. 2024.
+"""
 import simpy
 import numpy as np
-from environment.Part import Job
+from .part import Job
 
 
 # region Source
